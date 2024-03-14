@@ -1,0 +1,130 @@
+---
+title: "Hypothesis Testing"
+author: "Max Johansson"
+date: "Spring 2024"
+output: html_document
+---
+
+# 1. Introduction 
+In this project I perform some hypothesis tests, for 1 sample populations and 2 sample populations. 
+
+# 2. Data 
+I use a ISLR2 data set called 'Credit'.
+```{r, warning=FALSE, message=FALSE}
+# Setup: data and packages 
+library(ISLR2)
+
+df <- ISLR2::Credit
+
+sapply(df, class)
+
+```
+
+# 3. Results 
+
+## 3.1. One Sample 
+I consider the Income variable. I consider testing if the mean of this variable is significantly different than the mean under the null hypothesis, which I set to 40. 
+
+$$H_0: \mu = 40 \\ H_1: \mu \neq 40$$
+
+I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
+```{r, warning=FALSE, message=FALSE}
+
+# The mean and the standard deviation of the variable in the data: 
+m_hat_inc <- mean(df$Income)
+sd_hat_inc <- sd(df$Income)
+
+# Setting the null hypothesis: 
+m0_inc <- 40
+
+# Setting the significance level 
+a <- 0.05
+
+# Setting the sample size: 
+n <- nrow(df)
+
+# The degrees of freedom 
+d_free <- n - 1 
+
+# Critical t value: 
+t_crit <- qt(1- a/2, df = d_free)
+
+# The t-statistic is:
+t_stat <- (m_hat_inc - m0_inc)/ (sd_hat_inc / sqrt(n)) 
+
+# Upper and lower limits:
+ul <- m0_inc + t_crit*(sd_hat_inc / sqrt(n))
+ll <- m0_inc - t_crit*(sd_hat_inc/ sqrt(n))
+
+# The p-value of the outcome:
+p_val <- 2 * (1- pt(q = abs(t_stat), df = d_free))
+```
+
+I visualize the results by plotting the distribution of the income variable together with the null hypothesis mean, the sample mean and the critical limits. At a 5% significance level, the null hypothesis that the mean of income is equal to 40 is rejected in favor of the alternative hypothesis that the mean is not equal to 40. 
+
+```{r, warning=FALSE, message=FALSE}
+# Histogram
+hist(df$Income, main = "Histogram of Income", xlab = "Income", ylab = "Frequency", col = "black")
+abline(v = m0_inc, col = "red3", lwd = 2, lty = 2, label = "Mean under Null Hypothesis")
+abline(v = m_hat_inc, col = "blue3", lwd = 2, lty = 2, label = "Sample Mean")
+abline(v = c(ul, ll), col = "green3",lwd = 2, lty = 3)
+legend("topright", legend = c("Mean under Null", "Sample Mean", "Critical Limit"), col = c("red3","blue3", "green3"), lwd = 2, lty = 3)
+
+```
+
+
+## 3.2. Two Samples
+I now investigate if there a significant difference in income between unmarried people and married people. The hypotheses are: 
+
+$$H_0: \mu_{u} = \mu_{m}  \\ H_1: \mu_{u} \neq \mu_{m}$$
+
+```{r, warning=FALSE, message=FALSE}
+
+# Income values per marital status:
+vals_unmarried <- subset(df$Income, df$Married == "No")
+vals_married <- subset(df$Income, df$Married == "Yes")
+
+# Mean Income of non-married and married groups:
+m_unmarried <- mean(vals_unmarried)
+m_married <- mean(vals_married)
+
+# The difference:
+m_diff <- m_unmarried - m_married
+
+# Standard deviation of the groups:
+sd_unmarried <- sd(vals_unmarried)
+sd_married <- sd(vals_married)
+
+# Number of observations in each group: 
+n_unmarried <- length(vals_unmarried)
+n_married <- length(vals_married)
+
+# Pooled standard deviation:
+pooled_sd <- sqrt(((n_unmarried - 1) * sd_unmarried^2 + (n_married -1) * sd_unmarried^2) / (n_unmarried + n_married - 2))
+
+# t statistic:
+t <- m_diff / (pooled_sd * sqrt(1/n_unmarried + 1/ n_married))
+print(t)
+
+# Degrees of freedom: 
+d_fr <- n_unmarried + n_married - 2 
+
+# P-value of t-statistic:
+p <- 2 * (1- pt(abs(t), df = d_fr))
+
+# Print the t-statistic and the p-value 
+cat("The t-statistic is", t, "and the associated p-value is", p, "\n")
+
+# Lower and Upper limit for the difference
+ll <- m_diff - qt(0.975, d_fr) * pooled_sd * sqrt(1/n_unmarried + 1/n_married)
+ul <- m_diff +  qt(0.975, d_fr)* pooled_sd * sqrt(1/n_unmarried + 1/n_married)
+cat("The 95% confidence interval for the difference in means is between:", 
+    ll, "and", ul, "\n")
+
+```
+
+# 4. Findings 
+My results indicate that the mean of the income variable is not 40, and that the mean incomes of the unmarried and married subgroups are not significantly different from each other. 
+
+# 5. Libraries 
+ISLR2: https://cran.r-project.org/package=ISLR2
