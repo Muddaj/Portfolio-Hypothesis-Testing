@@ -2,32 +2,37 @@
 title: "Hypothesis Testing"
 author: "Max Johansson"
 date: "Spring 2024"
-output: html_document
+output: 
+  html_document:
+    fig_caption: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 # 1. Introduction 
-In this project I perform some hypothesis tests, for 1 sample populations and 2 sample populations. 
+In this project I perform two hypothesis tests on simulated data. In the first hypothesis test I consider the mean income of the individuals in the data, using the null hypothesis that the mean income of the population is equal to 40 income units against the alternative hypothesis that it is not equal to 40 income units. In the second hypothesis test I consider the mean income between two groups: unmarried and married individuals, testing the null hypothesis that the means of the groups are equal in the population against the alternative hypothesis that the means of the groups are not equal in the population.
 
 # 2. Data 
-I use a ISLR2 data set called 'Credit'.
+I use a ISLR2 data set called 'Credit'. The variables I consider for this project is the continuous 'income' variable and the binary 'married' variable. 
 ```{r, warning=FALSE, message=FALSE}
-# Setup: data and packages 
+# Setup: data and packages: 
 library(ISLR2)
 
+# Data file:
 df <- ISLR2::Credit
-
-sapply(df, class)
-
 ```
 
 # 3. Results 
 
 ## 3.1. One Sample 
-I consider the Income variable. I consider testing if the mean of this variable is significantly different than the mean under the null hypothesis, which I set to 40. 
+I consider the Income variable. I consider testing if the mean of this variable is significantly different than the mean under the null hypothesis, which I set to 40. I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
 
 $$H_0: \mu = 40 \\ H_1: \mu \neq 40$$
 
-I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
+The p-value associated with the t-statistic is smaller than 5%, leading me to reject the null hypothesis that the mean income in the population is equal to 40 in favour of the alternative hypothesis that the mean income of the population is not equal to 0. 
+
 ```{r, warning=FALSE, message=FALSE}
 
 # The mean and the standard deviation of the variable in the data: 
@@ -37,20 +42,20 @@ sd_hat_inc <- sd(df$Income)
 # Setting the null hypothesis: 
 m0_inc <- 40
 
-# Setting the significance level 
+# Setting the significance level: 
 a <- 0.05
 
 # Setting the sample size: 
 n <- nrow(df)
 
-# The degrees of freedom 
+# The degrees of freedom: 
 d_free <- n - 1 
 
 # Critical t value: 
 t_crit <- qt(1- a/2, df = d_free)
 
 # The t-statistic is:
-t_stat <- (m_hat_inc - m0_inc)/ (sd_hat_inc / sqrt(n)) 
+t_stat <- (m_hat_inc - m0_inc)/ (sd_hat_inc / sqrt(n))
 
 # Upper and lower limits:
 ul <- m0_inc + t_crit*(sd_hat_inc / sqrt(n))
@@ -58,6 +63,19 @@ ll <- m0_inc - t_crit*(sd_hat_inc/ sqrt(n))
 
 # The p-value of the outcome:
 p_val <- 2 * (1- pt(q = abs(t_stat), df = d_free))
+
+# Print the results:
+cat("The sample mean is:", 
+    round(m_hat_inc,3), 
+    "and a 95% confidence interval estimate of the mean income is:", 
+    round(ll,3),
+    "to",
+    round(ul,3), "\n")
+cat("The t-statistic is:", 
+    round(t_crit,3), 
+    "and the associated p-value is:", 
+    round(p_val, 3),"\n")
+
 ```
 
 I visualize the results by plotting the distribution of the income variable together with the null hypothesis mean, the sample mean and the critical limits. At a 5% significance level, the null hypothesis that the mean of income is equal to 40 is rejected in favor of the alternative hypothesis that the mean is not equal to 40. 
@@ -77,6 +95,8 @@ legend("topright", legend = c("Mean under Null", "Sample Mean", "Critical Limit"
 I now investigate if there a significant difference in income between unmarried people and married people. The hypotheses are: 
 
 $$H_0: \mu_{u} = \mu_{m}  \\ H_1: \mu_{u} \neq \mu_{m}$$
+
+According to my results, the p-value associated with the t-statistic is greater than 5%, so the null hypothesis that the means of unmarried and married individuals is equal is not rejected.
 
 ```{r, warning=FALSE, message=FALSE}
 
@@ -104,7 +124,6 @@ pooled_sd <- sqrt(((n_unmarried - 1) * sd_unmarried^2 + (n_married -1) * sd_unma
 
 # t statistic:
 t <- m_diff / (pooled_sd * sqrt(1/n_unmarried + 1/ n_married))
-print(t)
 
 # Degrees of freedom: 
 d_fr <- n_unmarried + n_married - 2 
@@ -112,14 +131,24 @@ d_fr <- n_unmarried + n_married - 2
 # P-value of t-statistic:
 p <- 2 * (1- pt(abs(t), df = d_fr))
 
-# Print the t-statistic and the p-value 
-cat("The t-statistic is", t, "and the associated p-value is", p, "\n")
-
 # Lower and Upper limit for the difference
 ll <- m_diff - qt(0.975, d_fr) * pooled_sd * sqrt(1/n_unmarried + 1/n_married)
 ul <- m_diff +  qt(0.975, d_fr)* pooled_sd * sqrt(1/n_unmarried + 1/n_married)
-cat("The 95% confidence interval for the difference in means is between:", 
-    ll, "and", ul, "\n")
+
+# Print the results:
+cat("The difference in means is:",
+    round(m_diff,3),
+    "and a 95% confidence interval for the difference in means is between:", 
+    round(ll,3), 
+    "and", 
+    round(ul,3), 
+    "\n")
+
+cat("The t-statistic is", 
+    round(t,3), 
+    "and the associated p-value is", 
+    round(p,3), 
+    "\n")
 
 ```
 
