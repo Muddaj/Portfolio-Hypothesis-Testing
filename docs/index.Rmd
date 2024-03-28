@@ -12,10 +12,10 @@ output:
 ---
 
 # 1. Introduction 
-In this project I perform two hypothesis tests on simulated data. In the first hypothesis test I consider the mean income of the individuals in the data, using the null hypothesis that the mean income of the population is equal to 40 income units against the alternative hypothesis that it is not equal to 40 income units. In the second hypothesis test I consider the mean income between two groups: unmarried and married individuals, testing the null hypothesis that the means of the groups are equal in the population against the alternative hypothesis that the means of the groups are not equal in the population.
+In this project I perform two hypothesis tests on simulated data. In the first hypothesis test I consider the mean income of the individuals in the data, using the null hypothesis that the mean income of the population is equal to 40.000 \$ income units against the alternative hypothesis that it is not equal to 40.000 $. In the second hypothesis test I consider the mean income between two groups: unmarried and married individuals, testing the null hypothesis that the means of the groups are equal in the population against the alternative hypothesis that the means of the groups are not equal in the population.
 
 # 2. Data 
-I use a ISLR2 data set called 'Credit'. The variables I consider for this project is the continuous 'income' variable and the binary 'married' variable. 
+I use a ISLR2 data set called 'Credit'. The variables I consider for this project is the continuous 'income' variable and the binary 'married' variable. The income variable is measured in thousands of \$, so 40.000 $ is registered as 40. 
 ```{r, warning=FALSE, message=FALSE}
 # Setup: data and packages: 
 library(ISLR2)
@@ -27,7 +27,7 @@ df <- ISLR2::Credit
 # 3. Results 
 
 ## 3.1. One Sample 
-I consider the Income variable. I consider testing if the mean of this variable is significantly different than the mean under the null hypothesis, which I set to 40. I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
+I test if the mean of the income variable is significantly different than the mean under the null hypothesis, which I set to 40. I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
 
 $$H_0: \mu = 40 \\ H_1: \mu \neq 40$$
 
