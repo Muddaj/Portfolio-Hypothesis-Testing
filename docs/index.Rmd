@@ -26,7 +26,7 @@ df <- ISLR2::Credit
 
 # 3. Results 
 
-## 3.1. One Sample 
+## 3.1. Two Sided Hypothesis Test - One Sample 
 I consider the Income variable. I consider testing if the mean of this variable is significantly different than the mean under the null hypothesis, which I set to 40. I use a significance level of 5%, rejecting the null hypothesis if the p-value of the observed t-statistic is equal to or less than 5%. 
 
 $$H_0: \mu = 40 \\ H_1: \mu \neq 40$$
@@ -65,15 +65,15 @@ ll <- m0_inc - t_crit*(sd_hat_inc/ sqrt(n))
 p_val <- 2 * (1- pt(q = abs(t_stat), df = d_free))
 
 # Print the results:
-cat("The sample mean is:", 
+cat("Sample mean:", 
     round(m_hat_inc,3), 
-    "and a 95% CI estimate of the mean income is:", 
+    "and 95% CI estimate:", 
     round(ll,3),
-    "to",
+    ",",
     round(ul,3), "\n")
-cat("The t-statistic is:", 
+cat("t-statistic:", 
     round(t_crit,3), 
-    "and the p-value is:", 
+    "and p-value:", 
     round(p_val, 3),"\n")
 
 ```
@@ -82,7 +82,7 @@ I visualize the results by plotting the distribution of the income variable toge
 
 ```{r, warning=FALSE, message=FALSE}
 # Histogram
-hist(df$Income, main = "Histogram of Income", xlab = "Income", ylab = "Frequency", col = "black")
+hist(df$Income, main = "Histogram of Income", xlab = "Income (1000 $)", ylab = "Frequency", col = "azure3")
 abline(v = m0_inc, col = "red3", lwd = 2, lty = 2, label = "Mean under Null Hypothesis")
 abline(v = m_hat_inc, col = "blue3", lwd = 2, lty = 2, label = "Sample Mean")
 abline(v = c(ul, ll), col = "green3",lwd = 2, lty = 3)
@@ -91,7 +91,7 @@ legend("topright", legend = c("Mean under Null", "Sample Mean", "Critical Limit"
 ```
 
 
-## 3.2. Two Samples
+## 3.2. Two Sided Hypothesis Test - Two Samples
 I now investigate if there a significant difference in income between unmarried people and married people. The hypotheses are: 
 
 $$H_0: \mu_{u} = \mu_{m}  \\ H_1: \mu_{u} \neq \mu_{m}$$
@@ -136,17 +136,17 @@ ll <- m_diff - qt(0.975, d_fr) * pooled_sd * sqrt(1/n_unmarried + 1/n_married)
 ul <- m_diff +  qt(0.975, d_fr)* pooled_sd * sqrt(1/n_unmarried + 1/n_married)
 
 # Print the results:
-cat("The difference in means is:",
+cat("Difference in means:",
     round(m_diff,3),
-    "and a 95% confidence interval for the difference in means is between:", 
+    "and 95% CI:", 
     round(ll,3), 
-    "and", 
+    ",", 
     round(ul,3), 
     "\n")
 
-cat("The t-statistic is", 
+cat("t-statistic:", 
     round(t,3), 
-    "and the associated p-value is", 
+    "and p-value:", 
     round(p,3), 
     "\n")
 
